@@ -27,6 +27,12 @@ CrossValid1<- function(X, y, nNeg, nPos, i2) {
   #
   # NOTES
   #
+  # Differs from CrossValid2 in that computes vector of statistics (e.g. REall) for 
+  # each step of a previously run stepwise regression. In contrast, CrossValid2
+  # deals just with the simpler case of one model (e.g. scalar RE). CrossValid1
+  # also is more complicated than CrossValid1 because CrossValid2 has to identify
+  # the "best" model (by max RE)
+  #
   # Absolutely important that input column pointer i1 indicates columns of X 
   # in order (left to right) as they entered stepwise in the regression assumed
   # to have been done before calling this function.
@@ -110,9 +116,11 @@ CrossValid1<- function(X, y, nNeg, nPos, i2) {
     RMSEvAll[k]<- RMSEv
     REall[k] <-RE
   }
+  
+
   #--- Find maximum-RE model and its statistics
   kmax <- which.max(REall)  # at this step
-  i2cv <- i2[1:kmax]
+  i2cv <- i2[1:kmax] 
   REwinner <- REall[kmax]
   Pcv <- as.matrix(P1[,kmax]) # cv predictions
   Ecv <- as.matrix(E1[,kmax]) # cv errors

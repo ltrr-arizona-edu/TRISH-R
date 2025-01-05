@@ -34,7 +34,7 @@ ForwStep2 <- function(X,namesX, y, c1) {
   #
   # revised 2024-03-04: corrected error in call to ForwStep2 for stepwise variables entering
   #   after the first to to enter. At "r<-cor(e,X[,ibullpen])". Error could have resulted in
-  #   MLR regression models picking next variable (not in model) most highlly correlated
+  #   MLR regression models picking next variable (not in model) most highly correlated
   #   with predictand, y, rather than with residuals, e, from previous step. Change could
   #   result in model with stronger statistics (e.g., R-squared)
   

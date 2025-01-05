@@ -13,8 +13,8 @@ ForwStep1 <- function(X,namesX, y,kstop,nNeg,nPos) {
   # namesX [character] vector of ids of potential predictors (what's in cols of X)
   # kstop [numeric] stopping criterion: 1=maximimum adjusted R-squared,
   #   2=maximum cross-validation RE
-  # nNeg [numberic] maximum negative lag on chronologies allowed in modeling
-  # nPos [numeric] maximum positive...CrossValidStorage
+  # nNeg [numeric] maximum negative lag on chronologies allowed in modeling
+  # nPos [numeric] maximum positive...
   #
   # OUTPUT
   # H: named list, with elements: 
@@ -28,14 +28,14 @@ ForwStep1 <- function(X,namesX, y,kstop,nNeg,nPos) {
   #     regression statistics and data, such as the residuals and predicted data.
   #     R has functions that operate on lm objects. For example,
   #     summary(H$Model) shows a summary table of the regression
-  #   StopCriterion: criterion for picking best model (1=max adjusted R-squares; 
+  #   StopCriterion: criterion for picking best model (1=max adjusted R-squared; 
   #      2=maximum cross-validation RE)
   #   StoppingStep: the step at which stepwise regression stopped according to StopCriterion
   #   ColsInModel: which columns of input X are in the final model; the order is important,
   #      and matches the order of coefficients in H$coefficients (after the intercept)
   #   Coefficients: the regression coefficients, starting with intercept term and then
-  #      in order as in H$ColsInModel.The Coefficients, combined with ColsInModel allow 
-  #      a reconstruction to with matrix X. 
+  #      in order as in H$ColsInModel.The coefficients, combined with ColsInModel allow 
+  #      a reconstruction to be generated from matrix X. 
   #   ColsInOrderEntry: order in which the columns of X entered the stepwise model. In general,
   #      this differs from order in H$ColsInModel
   #   Rsquared,RsquaredAdj: R-squared and adjusted R-squared of the final model
@@ -44,31 +44,32 @@ ForwStep1 <- function(X,namesX, y,kstop,nNeg,nPos) {
   #      adjusted R-squared at each step
   #   Foverall,Fpvalue: overall-F of the final regression model and p-value of that F
   #   CrossValidStorage: a list of detailed cross-validation statistics returned by
-  #      CrossValid1(). No need to dig into this unless curious. See the comments for
-  #      Crossvalid1() for definition of list.
+  #      CrossValid1(). See opening comments of function Crossvalid1 details
   #   NleftOutinCV,REcv,RMSEcv: cross-validation statistics. NleftOutCV is the number of 
   #      observations left out at each iteration of cross-validation. With lags, this is
-  #      greater than 1, and set to assure no tree-ring data providing a cross-validation
-  #      predicition was also used to calibrate the prediction model. REcv is the 
-  #      reduction-of-error statistic. RMSEcv is the root-mean-square error of cross-validation.
+  #      greater than 1, and set to ensure that no tree-ring data are used both to provide
+  #      a cross-validation prediction in a specific and to calibrate the model giving 
+  #      that prediction. REcv is the reduction-of-error statistic. RMSEcv is the 
+  #      root-mean-square error.
   #   ModelTable: a table object listing the same coefficients as in H$coefficients, but also
   #      including the corresponding id of the predictor, cross-referenced to columns of
   #      input matrix X and indicating if lagged positively or negatively and by how much.
   #      For example, X7 is the seventh column of X, no lags; and X2P2 is the second column of
   #      of X lagged +2 years forward from the predictand.
   #
-  # Rev 2023-08-16: cosmetic, to make sure that summary(G) retains 
-  # correct col name when just on predictor, on call to lm()
+  # Rev 2023-08-16: cosmetic, to make sure that summary(G) retains  correct col 
+  #    name when just on predictor, on call to lm()
+  # Rev 2024-12-21: so that global "code_dir" used to access CrossValid1.R
   
-  source("CrossValid1.R")
-  
+  source(paste(code_dir,"CrossValid1.R",sep="")) 
+
   #--- ALLOCATE AND INITIALIZE 
   Np<-dim(X)[2]  # size predictor pool
   i1<-1:Np # index to predictors in pool
   i2<-rep(NA,Np) # index in order of entry
-  Lin=rep(FALSE,Np)  # initial for in model
-  R2<-rep(NA,Np)
-  R2a<-rep(NA,Np)
+  Lin=rep(FALSE,Np)  # logical pointer to variables in model
+  R2<-rep(NA,Np) # Regression R-squared at each step
+  R2a<-rep(NA,Np) # Adjusted...
   
   
   #--- FORWARD STEPWISE REGRESSION
@@ -76,13 +77,13 @@ ForwStep1 <- function(X,namesX, y,kstop,nNeg,nPos) {
   for (j in 1:Np){
     if (j==1){
       
-      # First, pass pick X correlated highest (absolute R) with y
+      # First, pass pick X correlated highest (absolute correlation) with y
       colnames(X)<-namesX # re-initialize these 
       r<-cor(y,X)
       H<-sort(abs(r),decreasing=TRUE,index.return=TRUE)
       iwinner<-H$ix[1]
       i2[j]<-iwinner
-      Lin[iwinner]<-TRUE # Logical to cols of X in model to be estimated
+      Lin[iwinner]<-TRUE # turn on logical for variable just entered
 
       U<-X[,Lin,drop="FALSE"]  # cull matrix of those predictors
       # If only 1 predictor, need next to make sure lm receive col name
@@ -120,7 +121,7 @@ ForwStep1 <- function(X,namesX, y,kstop,nNeg,nPos) {
   
   #--- LEAVE-M-OUT CROSS-VALIDATION, STEPWISE
   #
-  # Do regardless of stopping rule
+  # Do regardless of stopping rule. CV will be a list with cross-validation results
   CV <-CrossValid1(X, y, nNeg, nPos, i2) 
   
   #--- FIND "BEST" MODEL AND RE-FIT IT
@@ -133,7 +134,7 @@ ForwStep1 <- function(X,namesX, y,kstop,nNeg,nPos) {
     # model. For large number of variables in pool of potential predictors, and
     # with those possibly chosen by correlation screening from larger number
     # of possible predictors, this criterion tends to over-fit model. Decided
-    # to stop entry instead FIRST maximimum of adjusted R2
+    # to stop entry instead FIRST maximum of adjusted R2
     #
     s<-sort(R2a,decreasing=TRUE,index.return=TRUE) # sorted adjusted R-squared,
     #  from highest to lowest.

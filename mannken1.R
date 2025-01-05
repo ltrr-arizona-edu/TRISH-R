@@ -101,7 +101,7 @@ mannken1 <- function(Din){
   # Salas, J. D. (1992). Analysis and modeling of hydrologic time series. In D. R. Maidment (Ed.), Handbook of hydrology (p. 1-72). New York: McGraw-Hill, Inc.
   # Wilks, D. S. (2019). Statistical methods in the atmospheric sciences (Fourth ed.). Cambridge, MA: Elsevier. (818 pp)
   # 
-  # Algorithms for Mann-Kendall statistic and adjustment of its signficance for autocorrelation from 
+  # Algorithms for Mann-Kendall statistic and adjustment of its significance for autocorrelation from 
   # Wilks (2019). Handling of ties in time series as recommended by Salas (1992). Test data from Haan (2002). Detreding
   # is done following Haan (2002, p. 345), who gives equations for non-parametric estimation of slope and intercept of a linear
   # trend line. Haan (2002) got the equations for the estimation from Helse and Hirsch (1992).

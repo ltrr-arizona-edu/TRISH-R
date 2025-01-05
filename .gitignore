@@ -1,25 +1,32 @@
-# History files
+# This project
+User_settings_sample.txt
+*.nb.html
+*.odt#
+
+# ignore ALL .log files
+*.log
+
+# ignore ALL files in ANY directory named temp
+temp/ 
+
+
+# R sesssion & history
+.Rproj.user
+.Rhistory
+.RDataTmp
+.Ruserdata
 .Rhistory
 .Rapp.history
+*~
 
-# Session Data files
-.RData
-.RDataTmp
-
-# User-specific files
-.Ruserdata
-
-# Example code in package build process
-*-Ex.R
+# RStudio files
+.Rproj.user/
 
 # Output files from R CMD build
 /*.tar.gz
 
 # Output files from R CMD check
 /*.Rcheck/
-
-# RStudio files
-.Rproj.user/
 
 # produced vignettes
 vignettes/*.html
