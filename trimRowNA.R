@@ -3,13 +3,13 @@ trimRowNA<- function(X){
   # D. Meko; last revised 2022-01-07
   #
   # X, [matrix]r the time series; assumed nX columns, no "time" column
-  # Returns vector:indices of X marking the row rows remaining 
+  # Returns vector:indices of X marking the rows remaining 
   #   after any trimming off leading and trailing NAs. But if any of the
   #   columns after trimming has and internal NA, returns a string with
   #   message instead of the vector of row indices.
   #
   # Why? Utility function for manipulating time series matrices of tree-ring
-  # prdictors for a reconstruction model
+  # predictors for a reconstruction model
 
   # Return an error string if X is not matrix
   if (!is.matrix(X)){return("X is not a matrix in trimRowNA()")}
