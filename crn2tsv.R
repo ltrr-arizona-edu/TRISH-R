@@ -1,6 +1,6 @@
 crn2tsv <- function(Din){
-  # Convert one or more tree-ring "crn" files to tab-sep time series matrix
-  # D. Meko; last revised 2025-01-11 -- still being written
+  # Multiple crn files to tsv files of chronologies and sample size
+  # Dave Meko, January 2025
   #
   #---INPUT
   #
@@ -19,6 +19,8 @@ crn2tsv <- function(Din){
   # yrGo [scalar] desired start year of output time series matrix of
   #   chronologies truncated on early end. That matrix will include only
   #   the chronologies with data extending back to yrGo
+  # LNaN  [logical] missing values as NaN (TRUE) or as NA (FALSE)
+  # LcolNumbers [logical] <- leading row of column number (TRUE) or not (FALSE)
   #
   #---OUTPUT
   # 
@@ -26,21 +28,27 @@ crn2tsv <- function(Din){
   # Output: a list with elements:
   #   Xfull, Xcut:  data frames of time series matrices of chronologies
   #   Sfull, Scut:  data frames with sample size (number of cores) for above
-  #   CodesFull, CodesCut:  character codes of the columns of the matrices
+  #   codesFull, codesCut:  character codes of the columns of the matrices
   #     after year column
   #
   #---REFERENCES
   #
   #---REVISIONS
   #
-  # revised 2025-01-12.... 
+  # revised 2025-01-17: to allow NaN or NA missing value code and to allow
+  #   a leading row of column numbers in output tsv files
   #
   #---NOTES
   #
-  # Assumes "code_dir" in global space. That is where user-written functions stored.
-  
+  # Assumes "code_dir" in global space. That is where user-written functions
+  # are stored.
+  #
   # Libraries needed (calling script should load these)
   #   dplR, treeclim, data.table
+  #
+  # Example driver script: chron2_UF2025b.R 
+  # That script has details of preparation of data and reason for the various
+  # options in Din. 
   
   #--- SOURCE FUNCTIONS
   
@@ -57,7 +65,27 @@ crn2tsv <- function(Din){
   fileoutCut <- Din$fileoutCut
   read.crn.arg <- Din$read.crn.arg # some args for call to read.crn
   yrGo  <- Din$yrGo
+  LNaN  <- Din$LNaN
+  LcolNumbers <- Din$LcolNumbers
   
+  # Missing value code for output tsv files 
+  if (LNaN){
+    mvCode <- "NaN"
+  } else {
+    mvCode <- "NA"
+  }
+
+  # logical for writing with col names. 
+  # In tsv output file, if write column numbers as row 1, will
+  # need to have a separate write.table call to write column names, followed
+  # by another write.table call to write the table with col.names==FALSE
+  # This is a quirk in write.table that needed workaround
+  if (LcolNumbers){
+    LcnCode <- FALSE # if writing line of column numbers, want col.names==FALSE
+    # in call to write matrix
+  } else {
+    LcnCode <- TRUE  # otherwise
+  }
   
   #--- MAKE LIST OF CRN FILES; STORE CHRONS AND SAMPLE SIZES
   
@@ -105,9 +133,10 @@ crn2tsv <- function(Din){
   FirstYear <- as.numeric(FirstYear)
   LastYear <- as.numeric(LastYear)
   nyr1 <- LastYear-FirstYear+1
-  A <- matrix(NA,nrow=nyr1,ncol=nser1) # data frame for chronologies
+  A <- matrix(NaN,nrow=nyr1,ncol=nser1) # data frame for chronologies
   mA <- dim(A)[1]
   nA <- dim(A)[2]
+
   yrA <- FirstYear:LastYear; yrB = yrA
   B <- A # to store sample size
   mB <- mA; nB <- nA
@@ -122,22 +151,65 @@ crn2tsv <- function(Din){
     A[irow,n] <- d[,1];
     B[irow,n] <- d[,2];
   }
-  
+
   # Trim rows so that no leading or trailing all-NA
   # also check that no internal NA in any series
   ikeep <- trimRowNA(A) # vector row pointer to keepers
   A <- A[ikeep,]; B<- B[ikeep,]
   yrA <- yrA[ikeep];  yrB <- yrB[ikeep]
-  
-  
+  nser <- dim(A)[2]
+ 
   # Bind year column to matrices of chronologies and sample size
   A1 <- cbind(yrA,A); B1 <- cbind(yrB,B) # add year as first column
   colnames(A1) <- c('Year',codesFull); colnames(B1) <- c('Year',codesFull)
-  
-  #--- Write file of full-length chronologies
+
+  #--- Optionally write row of column numbers to start file of full-length chronologies
+  if (LcolNumbers){
+    v <- 0:nser
+    v <- as.matrix(v); v <- t(v)
+    pf <- paste(pathout,fileoutFull,sep='')
+    write.table(v, pf, append = FALSE, sep = "\t", dec = ".",
+                row.names = FALSE, col.names = FALSE,quote=FALSE,
+                na=mvCode) 
+    h <- colnames(A1)
+    h <- as.matrix(h)
+    h <- t(h)
+    
+    # append column names 
+    write.table(h, pf, append = TRUE, sep = "\t", dec = ".",
+                row.names = FALSE, col.names = FALSE,quote=FALSE,
+                na=mvCode) 
+  } else {
+  }
+
+  #--- Write  remainder of file of full-length chronologies
   pf <- paste(pathout,fileoutFull,sep='')
-  write.table(A1, pf, append = FALSE, sep = "\t", dec = ".",
-              row.names = FALSE, col.names = TRUE,quote=FALSE)
+  write.table(A1, pf, append = !LcnCode, sep = "\t", dec = ".",
+              row.names = FALSE, col.names = LcnCode,quote=FALSE,
+              na=mvCode)
+  
+  
+  #--- SAMPLE SIZE OUTPUT TSV FILE, FULL CHRONOLOGY MATRIX
+  
+  # Optional row with column numbers, col 0 as year
+  if (LcolNumbers){
+    SSfile <- paste('SS_',fileoutFull,sep='')
+    pf <- paste(pathout,SSfile,sep='')
+    write.table(v, pf, append = FALSE, sep = "\t", dec = ".",
+                row.names = FALSE, col.names = FALSE,quote=FALSE,
+                na=mvCode) 
+    # append column names 
+    write.table(h, pf, append = TRUE, sep = "\t", dec = ".",
+                row.names = FALSE, col.names = FALSE,quote=FALSE,
+                na=mvCode) 
+  } else {
+  }
+  #--- Write  remainder of file of full-length chronologies
+  SSfile <- paste('SS_',fileoutFull,sep='')
+  pf <- paste(pathout,SSfile,sep='')
+  write.table(B1, pf, append = !LcnCode, sep = "\t", dec = ".",
+              row.names = FALSE, col.names = LcnCode,quote=FALSE,
+              na=mvCode)
   
   
   #--- ROW-TRUNCATED AND POSSIBLY COL-TRUNCATED VERSION OF CHRON MATRIX
@@ -157,16 +229,60 @@ crn2tsv <- function(Din){
   ikeep <- trimRowNA(A) # vector row pointer to keepers
   A <- A[ikeep,]; B<- B[ikeep,]
   yrA <- yrA[ikeep];  yrB <- yrB[ikeep]
-
+  nser <- dim(A)[2] # revised nser
   
+
     # Bind year column to matrices of chronologies and sample size
   A2 <- cbind(yrA,A); B2 <- cbind(yrB,B) # add year as first column
   colnames(A2) <- c('Year',codesCut); colnames(B2) <- c('Year',codesCut)
   
+  #--- Optionally write row of column numbers to start file of trimmed chronologies
+  if (LcolNumbers){
+    v <- 0:nser
+    v <- as.matrix(v); v <- t(v)
+    pf <- paste(pathout,fileoutCut,sep='')
+    write.table(v, pf, append = FALSE, sep = "\t", dec = ".",
+                row.names = FALSE, col.names = FALSE,quote=FALSE,
+                na=mvCode) 
+    h <- colnames(A2) # col names of trimmed matrix
+    h <- as.matrix(h)
+    h <- t(h)
+
+    # append column names 
+    write.table(h, pf, append = TRUE, sep = "\t", dec = ".",
+                row.names = FALSE, col.names = FALSE,quote=FALSE,
+                na=mvCode) 
+  } else {
+  }
+  
   #--- Write file of truncated and time-screened chronologies
   pf <- paste(pathout,fileoutCut,sep='')
-  write.table(A2, pf, append = FALSE, sep = "\t", dec = ".",
-              row.names = FALSE, col.names = TRUE,quote=FALSE)
+  write.table(A2, pf, append = !LcnCode, sep = "\t", dec = ".",
+              row.names = FALSE, col.names = LcnCode,quote=FALSE,
+              na=mvCode)
+
+  
+  #--- SAMPLE SIZE OUTPUT TSV FILE, CUT CHRONOLOGY MATRIX
+  
+  # Optional row with column numbers, col 0 as year
+  if (LcolNumbers){
+    SSfile <- paste('SS_',fileoutCut,sep='')
+    pf <- paste(pathout,SSfile,sep='')
+    write.table(v, pf, append = FALSE, sep = "\t", dec = ".",
+                row.names = FALSE, col.names = FALSE,quote=FALSE,
+                na=mvCode) 
+    # append column names 
+    write.table(h, pf, append = TRUE, sep = "\t", dec = ".",
+                row.names = FALSE, col.names = FALSE,quote=FALSE,
+                na=mvCode) 
+  } else {
+  }
+  #--- Write  remainder of file of full-length chronologies
+  SSfile <- paste('SS_',fileoutCut,sep='')
+  pf <- paste(pathout,SSfile,sep='')
+  write.table(B2, pf, append = !LcnCode, sep = "\t", dec = ".",
+              row.names = FALSE, col.names = LcnCode,quote=FALSE,
+              na=mvCode)
   
   #--- OUTPUT LIST
   
