@@ -126,7 +126,7 @@
 #   Number of chronologies remaining after screening for sites being in the specified
 #   geographic domain (e.g., polygon drawn interactively to mark tree-ring site domain 
 #   in TRISH ). Outside of TRISH, "NafterPolygon" is ignored, and can be set identical
-#   to "NafterYearScreen" and "NafterPolygon"
+#   to "NafterYearScreen" and "NsitesUserNetwork"
 # "HydroVariable" :  "RO",
 #   Code for the hydrclimatic variable represented by the predictand. Must be a member of
 #   a recognized set of codes. TRISH uses this code for determining how to compute seasonalized
@@ -192,7 +192,7 @@
 #   1/10 N, where N is the length of the calibration period.
 # "nPCsKeep" :  1,
 #   If PCoption=1, this is the number of PCs to keep in the pool of potential predictors
-#   of the MSR model (inclusion by priority of size of eigenvalue). If PCoption!=1, 
+#   of the MSR model (inclusion by priority of size of eigenvalue). If PCoption != 1, 
 #   nPCsKeep is ignored 
 # "f" :   0.10,
 #   A decimal fraction limiting the sized of the pool of potential predictors of the
