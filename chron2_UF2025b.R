@@ -1,26 +1,28 @@
 # chron2_UF2025b.R
-# Chronology time series matrix development script
+# Chronology time series matrix from crn files in laptop folder
 # D Meko
-# Last revised 2025-01-17
+# Last revised 2025-02-01
 #
-# Reads a file of crn filenames; loops over the filenames, reading in site
-# chronologies and sample sizes and building time series matrices of those, 
-# with year as column 1.
+# Reads filenames of specified suffix from an input folder and calls crn2tsv
+# to read the crn files, loop over them and build time series matrices of
+# the chronologies and their sample sizes, with year as first column.
 #
 # Input specs allow control over the time coverage of the resulting matrix and
 # which chronologies it contains. Writes two tab-separated-value (tsv) files of
-# time series chronologies, and corresponding two files of sample size.
+# time series chronologies, and corresponding two files of sample size. Also
+# writes two tsv files listing first and last year of non-missing data in each
+# chronology in the two output time series matrices
 #
 # One version of tsv file has all chronologies or sample sizes covering interval
 # from the first year with data in any series to the most recent year with
 # data in any series. The other version of tsv file has the matrix truncated 
 # to start at specified year.  Output filenames are coded like this, for example:
 #
-#   EarthChronsFull.txt, SS_EarthChronsFul.txt
-#   EarthChrons1466.txt, SS_EarthChrons1466.txt
+#   EarthChronsFull.txt, SS_EarthChronsFul.txt, Years_EarthChronsFull.txt
+#   EarthChrons1466.txt, SS_EarthChrons1466.txt, Years_EarthChrons1466.txt
 #
 # where 1466 in this case is the specified start year for the "cut" version of
-# chronologies. 
+# chronologies, and "EarthChrons" is name specific to sample data 
 #
 # You have control through edited lines (search this file for occurrences of
 # "Edit next) of following:
@@ -29,6 +31,8 @@
 #  3) whether the output files of time series matrix should have a leading row with
 #     column number (0 above the Year column) indicating sequential number of
 #     chronology in the matrix.
+#  4) whether to exclude a-prior specific crn files that happen to be in the
+#     input folder
 #
 # Besides the output tsv files, you will find a list "ChronData" in your 
 # environment after running this script. ChronData is a list with elements:
@@ -44,7 +48,7 @@
 # TRISH requires "NaN" for the missing value code. 
 #
 # The option for "cut" or "truncated" time series matrix output is for 
-# compatibility of running ReconAnalog.R reconstruction script standalong outside
+# compatibility of running ReconAnalog.R reconstruction script standalone outside
 # of TRISH. In that case, the all series in the matrix are required to have
 # data in the first year of the matrix. For TRISH, the full matrix can be uploaded
 # and TRISH interactively does any required row and column trimming.
@@ -64,10 +68,9 @@
 #   your specified (see below) "outputDir)
 #
 # To run on your own crn files, follow directions above, except will have to
-# edit lines dealing with paths/filenames and with the truncation start year "yrGo",
-# and have to comment out two lines to get the desired mode of output -- NaN vs NA
-# and leading column-number row or not.
-
+# edit some lines. Search this file on the string "Edit next" to fine where you 
+# may need to edit lines. Some editing is just to comment out the undesired of
+# two options. 
 
 ######## LOAD LIBRARIES
 
@@ -120,6 +123,17 @@ LNaN <- 'TRUE'  # missing data as NaN
 #LcolNumbers <- 'TRUE'  # add a leading row of column numbers to tsv output file
 LcolNumbers <- 'FALSE' # do not add such a leading row
 
+# Edit next two lines by commenting out 1 line and editing maskChron as desired
+maskChron <- NA  #  if NA, no chronologies are to excluded (masked out) from analysis
+#maskChron <- c(3,4)  # mask the indicated chronologies from analysis
+  # Numbers correspond to data columns in file fileoutFull (see above) 
+  # For example, c(3,4) means mask chronologies #3 and #4
+
+# Edit next 2 lines
+fileoutFull <- "EarthChronsFull.txt"  # EarthChrons is a sample dataset
+fileoutPrefix <- 'EarthChrons'
+
+
 # Build filename for matrix truncated in yrGo
 fileoutCut <- paste(fileoutPrefix,as.character(yrGo),'.txt',sep='')
 
@@ -129,9 +143,9 @@ fileoutCut <- paste(fileoutPrefix,as.character(yrGo),'.txt',sep='')
 #--- CALL FUNCTION TO READ CRNS, ORGANIZE AS MATRIX, AND WRITE OUTPUT FILE
 
 Din <- list(pathin,suff.pattern,pathout,fileoutFull,fileoutCut,
-            read.crn.arg,yrGo,LNaN,LcolNumbers)
+            read.crn.arg,yrGo,LNaN,LcolNumbers,maskChron)
 names(Din) <- c('pathin','suff.pattern','pathout','fileoutFull','fileoutCut',
-  'read.crn.arg','yrGo','LNaN','LcolNumbers')
+  'read.crn.arg','yrGo','LNaN','LcolNumbers','maskChron')
 
 ChronData <- crn2tsv(Din)
 
