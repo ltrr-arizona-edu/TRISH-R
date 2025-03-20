@@ -5,7 +5,7 @@ gplots (v3.1.3.1)
 nortest (v1.0.4)
 pracma (v2.4.4)
 rjson (v0.2.21)
-ggplot1 (v3.5.1)
+ggplot2 (v3.5.1)
 resample (v0.6)
 
 versions of Rstudio and R on Meko's laptop:
