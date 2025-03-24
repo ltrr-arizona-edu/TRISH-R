@@ -14,7 +14,7 @@ R version 4.1.2 (2021-11-01)
 RStudio 2023.06.0 Build 421
 
 Operating system on Meko's laptop:
-Ubuntu 22.04.4 LTS
+Ubuntu 24.04.1 LTS
 
 
 
