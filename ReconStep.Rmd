@@ -10,7 +10,7 @@ output:
 bibliography: /media/dave/Red128/Data/BibTex/BibliographyMeko.bib
 ---
 
-ReconStep.Rmd is an instructional [R Markdown](http://rmarkdown.rstudio.com) notebook ("Rmd" file) to illustrate the reconstruction of a climatic or hydrologic time series from a network of tree-ring site chronologies by stepwise multiple linear regression. The latest version of ReconStep was revised for the course "Tree Rings, Climate, Natural Resources, and Human Interaction," to be held 5-20 June 2025 at the Petnica Science Research Center in Serbia.
+ReconStep.Rmd is an instructional [R Markdown](http://rmarkdown.rstudio.com) notebook ("Rmd" file) to illustrate the reconstruction of a climatic or hydrologic time series from a network of tree-ring site chronologies by stepwise multiple linear regression. The latest version of ReconStep was revised for the course "Tree Rings, Climate, Natural Resources, and Human Interaction," to be held in August 2025 at the Petnica Science Research Center in Serbia.
 
 The code in ReconStep.Rmd is an R script modified from an earlier script, StepwiseRecon.Rmd, written for the dendroclimatology module of the summer 2021 Dendrochronology Intensive Summer Course (DISC) at the University of Arizona.
 

@@ -1,4 +1,4 @@
-R does not depend on which operating system you are using. FYI, the operating system on Meko's laptop:  Ubuntu 22.04.1 LTS
+R does not depend on which operating system you are using. FYI, the operating system on Meko's laptop:  Ubuntu 24.04.1 LTS
 
 R and RStudio must be installed on your computer. The particular versions of those are not critical, but they should be "recent."  FYI, on Meko's laptop they are:
 
@@ -7,22 +7,24 @@ R and RStudio must be installed on your computer. The particular versions of tho
 
 ReconAnalog.R requires several R packages. Here is a list of the required packages, and the version number under which ReconAnalog runs successfully on Meko's laptop.
 
-		car  (v3.1.3)
-		gplots (v3.2.0)
-		nortest (v1.0-4)
-		pracma (v2.4.4)
-		rjson (v0.2.23)
-		ggplot2 (v3.5.1)
-		resample (v0.6)
+		car  (3.1.3)
+		gplots (3.2.0)
+		nortest (1.0-4)
+		pracma (2.4.4)
+		rjson (0.2.23)
+		ggplot2 (3.5.1)
+		resample (0.6)
 
 ReconStep.Rmd and exercises in chronology development, for DISC ant the international course, require the following R packages to be installed
 
-		rmarkdown (v2.29)
-		dplR (v1.7.8)
-		car  (v3.1.3)
-		nortest (v1.0-4)
-		pracma (v2.4.4)
-		resample (v0.6)
+		rmarkdown (2.29)
+		dplR (1.7.8)
+		car  (3.1.3)
+		nortest (1.0-4)
+		pracma (2.4.4)
+		resample (0.6)
+		treeclim (2.0.7.1)
+		data.table (1.17.0)
 		
 
 
