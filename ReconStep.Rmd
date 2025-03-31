@@ -6,7 +6,8 @@ output:
   html_notebook: default
   pdf_document: default
 #bibliography: /home/dave/Data/BibTex/BibliographyMeko.bib
-bibliography: /media/dave/62CE598D5F71B059/Data/BibTex/BibliographyMeko.bib
+#bibliography: /media/dave/62CE598D5F71B059/Data/BibTex/BibliographyMeko.bib
+bibliography: /media/dave/Red128/Data/BibTex/BibliographyMeko.bib
 ---
 
 ReconStep.Rmd is an instructional [R Markdown](http://rmarkdown.rstudio.com) notebook ("Rmd" file) to illustrate the reconstruction of a climatic or hydrologic time series from a network of tree-ring site chronologies by stepwise multiple linear regression. The latest version of ReconStep was revised for the course "Tree Rings, Climate, Natural Resources, and Human Interaction," to be held 5-20 June 2025 at the Petnica Science Research Center in Serbia.
@@ -138,7 +139,7 @@ clean_bib <- function(input_file, input_bib, output_bib){
 # now call the function to generate bibliography
 # Edit following line by commenting it out (add "#" at start of line)
 
-clean_bib('ReconStep.Rmd','/media/dave/62CE598D5F71B059/Data/BibTex/BibliographyMeko.bib',
+clean_bib('ReconStep.Rmd','/media/dave/Red128/Data/BibTex/BibliographyMeko.bib',
           'ReconStep.bib')
 #clean_bib('ReconStep.Rmd','/home/dave/Data/BibTex/BibliographyMeko.bib','ReconStep.bib')
 ```
