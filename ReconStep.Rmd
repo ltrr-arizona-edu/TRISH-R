@@ -5,9 +5,8 @@ output:
     df_print: paged
   html_notebook: default
   pdf_document: default
-#bibliography: /home/dave/Data/BibTex/BibliographyMeko.bib
-#bibliography: /media/dave/62CE598D5F71B059/Data/BibTex/BibliographyMeko.bib
-bibliography: /media/dave/Red128/Data/BibTex/BibliographyMeko.bib
+# Edit following line to path where ReconStep.bib stored on your computer
+bibliography: /home/dave/GitWork/TRISH-R/ReconStep.bib
 ---
 
 ReconStep.Rmd is an instructional [R Markdown](http://rmarkdown.rstudio.com) notebook ("Rmd" file) to illustrate the reconstruction of a climatic or hydrologic time series from a network of tree-ring site chronologies by stepwise multiple linear regression. The latest version of ReconStep was revised for the course "Tree Rings, Climate, Natural Resources, and Human Interaction," to be held in August 2025 at the Petnica Science Research Center in Serbia.
@@ -136,12 +135,10 @@ clean_bib <- function(input_file, input_bib, output_bib){
 
   writeLines(unlist(output), output_bib)
 }
-# now call the function to generate bibliography
-# Edit following line by commenting it out (add "#" at start of line)
-
-clean_bib('ReconStep.Rmd','/media/dave/Red128/Data/BibTex/BibliographyMeko.bib',
-          'ReconStep.bib')
-#clean_bib('ReconStep.Rmd','/home/dave/Data/BibTex/BibliographyMeko.bib','ReconStep.bib')
+# Call function to generate bib file for this project from Meko's hugh bib file. User
+# can ignore this code. Meko may as well ignore it to, because this function clean_bib
+# fails to pull bibtex reference whose entries are more than one name (e.g., Meko&Woodhouse2020)
+#clean_bib('ReconStep.Rmd','/home/dave/Data/BibTex/BibliographyMeko.bib','ReconStepMeko.bib')
 ```
 
 ### User settings
