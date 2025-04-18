@@ -1,30 +1,35 @@
 R does not depend on which operating system you are using. FYI, the operating system on Meko's laptop:  Ubuntu 24.04.1 LTS
 
-R and RStudio must be installed on your computer. The particular versions of those are not critical, but they should be "recent."  FYI, on Meko's laptop they are:
+R and RStudio must be installed on your computer. The particular versions of those are not critical, but they should be "recent."  FYI, on Meko's laptop, in RStudio, after running ReconStep.Rmd, ver() gives following
 
-		R version 4.4.3 (2025-02-28) -- "Trophy Case"
-		RStudio 2024.12.1 Build 563
+> ver()
+------------------------------------------------------------------------
+Version:    R version 4.5.0 (2025-04-11)
+License:    Gnu General Public License, GPL-3
+Platform:   x86_64-pc-linux-gnu
+Op.System:  x86_64-pc-linux-gnu (64-bit)
+Locale:     LC_CTYPE=en_US.UTF-8;LC_NUMERIC=C;LC_TIME=en_US.UTF-8;LC_COLLATE=en_US.UTF-8;LC_MONETARY=en_US.UTF-8;LC_MESSAGES=en_US.UTF-8;LC_PAPER=en_US.UTF-8;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_US.UTF-8;LC_IDENTIFICATION=C
+------------------------------------------------------------------------
+Loaded Base Packages:
+    stats  graphics  grDevices  utils  datasets  methods  base  
+Contributed Packages:
+gplots        Version 3.2.0     (2024-10-05)    License GPL-2  
+ggplot2       Version 3.5.2     (2025-04-09)    License MIT + file LICENSE  
+rjson         Version 0.2.23    (2024-09-16)    License GPL-2  
+resample      Version 0.6       (2022-06-12)    License BSD_3_clause + file LICENSE  
+treeclim      Version 2.0.7.1    (2024-12-13)    License GPL-3  
+Rcpp          Version 1.0.14    (2025-01-11)    License GPL (>= 2)  
+data.table    Version 1.17.0    (2025-02-22)    License MPL-2.0 | file LICENSE  
+dplR          Version 1.7.8     (2025-01-30)    License GPL (>= 2)  
+stringr       Version 1.5.1     (2023-11-14)    License MIT + file LICENSE  
+nortest       Version 1.0-4     (2015-07-29)    License GPL (>= 2)  
+pracma        Version 2.4.4     (2023-11-08)    License GPL (>= 3)  
+car           Version 3.1-3     (2024-09-23)    License GPL (>= 2)  
+carData       Version 3.0-5     (2022-01-05)    License GPL (>= 2)  
+rmarkdown     Version 2.29      (2024-11-04)    License GPL-3  
+------------------------------------------------------------------------
 
-ReconAnalog.R requires several R packages. Here is a list of the required packages, and the version number under which ReconAnalog runs successfully on Meko's laptop.
-
-		car  (3.1.3)
-		gplots (3.2.0)
-		nortest (1.0-4)
-		pracma (2.4.4)
-		rjson (0.2.23)
-		ggplot2 (3.5.1)
-		resample (0.6)
-
-ReconStep.Rmd and exercises in chronology development, for DISC ant the international course, require the following R packages to be installed
-
-		rmarkdown (2.29)
-		dplR (1.7.8)
-		car  (3.1.3)
-		nortest (1.0-4)
-		pracma (2.4.4)
-		resample (0.6)
-		treeclim (2.0.7.1)
-		data.table (1.17.0)
-		
-
+Not all of the above packages are needed by ReconStep.Rmd (see the code). Installing all of 
+the above will ensure that some other script used in DISC and the international course will
+have all required packages.
 

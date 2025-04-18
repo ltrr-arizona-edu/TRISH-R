@@ -102,12 +102,25 @@ rm(list=ls())
 # Edit following line to match where you have stored user-written functions (UWFs)
 code_dir <- "/home/dave/GitWork/TRISH-R/"
 
+# The following five packages are essential to ReonStep.Rmd
 library(rmarkdown)
 library(car) 
 library(pracma)
 library(nortest)
 library(stringr)
+
+# The next packages are not needed by ReconStep.Rmd but are needed for a 
+# couple chronology development scripts in the international course
 library(dplR)
+library(data.table)
+library(treeclim)
+
+# The next packages are not needed by ReconStep.Rmd, but are needed by
+# ReconAnalog.R
+library(resample)
+library(rjson)
+library(ggplot2)
+library(gplots)
 
 source(paste(code_dir,'LagYear.R',sep=''))  # build lagged matrix of chrons
 source(paste(code_dir,'PeriodCommon.R',sep=''))  # common period of overlap of chrons and predictand
