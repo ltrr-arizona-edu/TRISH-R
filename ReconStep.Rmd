@@ -148,10 +148,16 @@ clean_bib <- function(input_file, input_bib, output_bib){
 
   writeLines(unlist(output), output_bib)
 }
-# Call function to generate bib file for this project from Meko's hugh bib file. User
-# can ignore this code. Meko may as well ignore it to, because this function clean_bib
-# fails to pull bibtex reference whose entries are more than one name (e.g., Meko&Woodhouse2020)
-#clean_bib('ReconStep.Rmd','/home/dave/Data/BibTex/BibliographyMeko.bib','ReconStepMeko.bib')
+
+# Call function to generate bib file for this project from my bib file. User
+# can ignore this code. I mus be aware that clear_bib does not work properly with
+# bibtex files, like mine, that have key fields with more than one name, such
+# as "Meko&Stockton1983." So, I have to build ReconStep.bib MANUALLY pasting 
+# from /media/dave/Red128/BibliographyMeko.bib to ReconStep.bib. To avoid catastropic 
+# overwriting of ReconStep.bib, I name the NEVER TO BE CREATED output file below
+# 'ReconStepMeko.bib' instead of ReconStep.bib.
+#
+# clean_bib('ReconStep.Rmd','/home/dave/Data/BibTex/BibliographyMeko.bib','ReconStepMeko.bib')
 ```
 
 ### User settings
@@ -327,7 +333,7 @@ rm(tit1)
 
 ################################################################# 
 
-The next chunk of code screens the matrix of lagged chronologies to include only the *m* variables most highly correlated (absolute correlation) with *y*. The purpose of the screening is avoid artificial, or "chance," relationships that can result from an overly large pool of potential predictors [@Rencher&Pun1980]. Your setting ("User settings") for parameter *f* in the next chunk controls the screening. Let's take an example. With 5 chronologies, and allowing for lags of up to +-2 years, the pool of potential predictors has a total of 5x5=25 variables. If the length of the calibration period is 50 years, this means the the ratio of the size of the pool to the number of calibration observations is 25/50=0.5. Such a high ratio gives a high likelihood of chance relationships in stepwise regression. This risk can be reduced by keeping just those tree-ring variables most highly correlated with *y* in the pool (correlation screening). The setting for parameter *f* forces the pool to fewer than *fN* variables in the pool of potential predictors; those are selected in order of decreasing absolute correlation with *y.* The default is *f=0.1*, but you can change this to make the screening more or less stringent.
+The next chunk of code screens the matrix of lagged chronologies to include only the *m* variables most highly correlated (absolute correlation) with *y*. The purpose of the screening is avoid artificial, or "chance," relationships that can result from an overly large pool of potential predictors [@Rencher&Pun1980]. Your setting ("User settings") for parameter *f* in the next chunk controls the screening. Let's take an example. With 5 chronologies, and allowing for lags of up to +-2 years, the pool of potential predictors has a total of 5x5=25 variables. If the length of the calibration period is 50 years, this means the the ratio of the size of the pool to the number of calibration observations is 25/50=0.5. Such a high ratio gives a high likelihood of chance relationships in stepwise regression. This risk can be reduced by keeping just those tree-ring variables most highly correlated with *y* in the pool (correlation screening). The setting for parameter *f* forces the pool to fewer than *fN* variables in the pool of potential predictors; those are selected in order of decreasing absolute correlation with *y.* The default is *f=0.1*, but you can change this to make the screening more or less stringent. The default follows the "10:1" rule of minimum recommended ratio of number of calibration observations to number of potential predictors in the pool for stepwise regression [@Chowdhury&Turin2020].
 
 The next chunk also creates a list of the ids of the screened tree-ring variables. These or their principal components will comprise the pool of potential predictor for the reconstruction model. A bar plot of the correlations is also displayed. The longest bars in the chart correspond to the predictors passing screening. The coded names of those predictors are listed in the console. The correlations are computed for the calibration period that you specified in "User settings," or otherwise for years that all series overlap the predictand (default calibration period).
 
