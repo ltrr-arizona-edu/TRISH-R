@@ -29,9 +29,9 @@ After running this script, you can right-click on any graphic and save it as a p
 
 Preliminary steps are to install R and Rstudio along with any needed R packages. The six R packages required are listed in the "library" commands of the next code chunk. Compatibility problems sometimes come up when using old versions of R or RStudio. My versions for testing this program are:
 
--   R version 4.3.3 (2024-02-29)
+-   R version 4.5.0 (2025-04-11)
 
--   RStudio version 2023.06.0 Build 421
+-   RStudio version 2024.12.1 Build 563
 
 You also need access to eight user-written functions (UWFs), which for this script are defined as functions written by David Meko. The "source" commands in the chunk below indicate the UWFs needed. Notice that these source commands include a path to a folder on Meko's laptop. You need to edit the lines to replace that path with a path to where you are storing the UWFs on your laptop. The simplest solution is to keep everything -- this script, the UWFs, and all data files, in a single R project folder. In that case no path is needed in the "source" commands for the UWFs.
 
@@ -74,7 +74,7 @@ Reconstruction steps are summarized below.
 
 2)  Optionally, expand chronology matrix by including lags on the chronologies
 
-3)  Screen the matrix of lagged chronologies to include only those chronologies most highly correlated (absolute correlation) with *y*.
+3)  Screen the matrix of lagged chronologies to include only those variables most highly correlated (absolute correlation) with *y*.
 
 4)  Run a principal components analysis (PCA; @Mardia&Kent1979) on the matrix of screened lagged chronologies, and subsequently use either the screened chronologies or their principal component (PC) scores as the pool of potential predictors in stepwise regression. Assume that *X* is a time series matrix of this pool of variables, whether chronologies or PCs.
 
@@ -88,11 +88,12 @@ Reconstruction steps are summarized below.
 
 6)  Apply the model to full-length matrix of available tree-ring data to generate reconstructed *y*, or $\hat{y}$.
 
-    The reconstruction process also includes analysis of residuals and split-sample calibration/validation of the final regression model. Optionally, "independent verification" of the model is also implemented. Independent verification is checking skill of prediction on observations (years) of data withheld from data screening or model calibration. More details are given in the text preceding each code chunk, as well as in the comments inside the chunks.
+
+The reconstruction process also includes analysis of residuals and split-sample calibration/validation of the final regression model. Optionally, "independent verification" of the model is also implemented. Independent verification is checking skill of prediction on observations (years) of data withheld from data screening or model calibration. More details are given in the text preceding each code chunk, as well as in the comments inside the chunks.
 
 ### Libraries and functions
 
-The next chunk loads libraries and makes accessible, or "sources" any needed UWFs. You need to edit just one line in the next chunk: change the folder in the "code_dir" statement to match the folder where you have stored the UWFs on your laptop.
+The next chunk loads libraries and makes accessible, or "sources," any needed UWFs. You need to edit just one line in the next chunk: change the folder in the "code_dir" statement to match the folder where you have stored the UWFs on your laptop.
 
 Try executing the chunk below by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. You will get a couple warnings about objects being "masked" from a couple R packages; ignore the warnings.
 
@@ -162,7 +163,7 @@ clean_bib <- function(input_file, input_bib, output_bib){
 
 ### User settings
 
-The next chunk allows you to tailor the reconstruction model. Settings include input filenames and various parameters that control the modeling. You can allow lags (up to 2 years) on the tree-ring chronologies used as predictor variables. To guard against overfitting the regression model, you can specify that the pool of potential predictors must be smaller than some fraction of the number of years in the calibration period. You can optionally specify transformation of the regression predictand, *y*. You can also optionally specify that variables in the pool of potential predictors be principal components of chronologies rather than chronologies themselves. Another setting allows you to specify a stopping rule for entry of variables in stepwise regression. Predictors for stepwise regression are entered in order of maximum reduction of variance of residuals.
+The next chunk allows you to tailor the reconstruction model. Settings include input filenames and various parameters that control the modeling. You can allow lags (up to 2 years) on the tree-ring chronologies used as predictor variables. To guard against overfitting the regression model, you can specify that the pool of potential predictors must be no larger than some specified fraction of the number of years in the calibration period. You can optionally specify transformation of the regression predictand, *y*. You can also optionally specify that variables in the pool of potential predictors be principal components of chronologies rather than chronologies themselves. Another setting allows you to specify a stopping rule for entry of variables in stepwise regression. Predictors for stepwise regression are entered in order of maximum reduction of variance of residuals.
 
 The two alternative rules are available for stopping entry or predictors in stepwise regression: 1) maximum adjusted *R^2^* of regression, and 2) maximum cross-validation RE. Please read the comments in the chunk below for additional guidance in editing the code.
 
@@ -307,7 +308,7 @@ tsp<-yrU[mU]
 ktrim=2
 D<-LagYear(U,tgo,tsp,nNeg,nPos,ktrim) # list with lagged matrix, ids, etc
 W<-D$X # lagged matrix of chrons
-colnames(W)<-D$ids # add column names associating vatiables and lags with W
+colnames(W)<-D$ids # add column names associating variables and lags with W
 yrW<-D$tGo:D$tSp
 # W, yrW, colnames(W) now desribed the full lagged chronology 
 
@@ -333,7 +334,7 @@ rm(tit1)
 
 ################################################################# 
 
-The next chunk of code screens the matrix of lagged chronologies to include only the *m* variables most highly correlated (absolute correlation) with *y*. The purpose of the screening is avoid artificial, or "chance," relationships that can result from an overly large pool of potential predictors [@Rencher&Pun1980]. Your setting ("User settings") for parameter *f* in the next chunk controls the screening. Let's take an example. With 5 chronologies, and allowing for lags of up to +-2 years, the pool of potential predictors has a total of 5x5=25 variables. If the length of the calibration period is 50 years, this means the the ratio of the size of the pool to the number of calibration observations is 25/50=0.5. Such a high ratio gives a high likelihood of chance relationships in stepwise regression. This risk can be reduced by keeping just those tree-ring variables most highly correlated with *y* in the pool (correlation screening). The setting for parameter *f* forces the pool to fewer than *fN* variables in the pool of potential predictors; those are selected in order of decreasing absolute correlation with *y.* The default is *f=0.1*, but you can change this to make the screening more or less stringent. The default follows the "10:1" rule of minimum recommended ratio of number of calibration observations to number of potential predictors in the pool for stepwise regression [@Chowdhury&Turin2020].
+The next chunk of code screens the matrix of lagged chronologies to include only the *m* variables most highly correlated (absolute correlation) with *y*. The purpose of the screening is avoid artificial, or "chance," relationships that can result from an overly large pool of potential predictors [@Rencher&Pun1980]. Your setting ("User settings") for parameter *f* in the next chunk controls the screening. Let's take an example. With 5 chronologies, and allowing for lags of up to +-2 years, the pool of potential predictors has a total of 5x5=25 variables. If the length of the calibration period is 50 years, this means the the ratio of the size of the pool to the number of calibration observations is 25/50=0.5. Such a high ratio gives a high likelihood of chance relationships in stepwise regression. This risk can be reduced by keeping just those tree-ring variables most highly correlated with *y* in the pool (correlation screening). The setting for parameter *f* forces the pool of potential predictors to include at most  *fN* variables; those variables are selected in order of decreasing absolute correlation with *y.* The default is *f=0.1*. You can change this to make the screening more or less stringent. The default follows the "10:1" rule of minimum recommended ratio of number of calibration observations to number of potential predictors in the pool for stepwise regression [@Chowdhury&Turin2020].
 
 The next chunk also creates a list of the ids of the screened tree-ring variables. These or their principal components will comprise the pool of potential predictor for the reconstruction model. A bar plot of the correlations is also displayed. The longest bars in the chart correspond to the predictors passing screening. The coded names of those predictors are listed in the console. The correlations are computed for the calibration period that you specified in "User settings," or otherwise for years that all series overlap the predictand (default calibration period).
 
@@ -436,7 +437,7 @@ if (LIV){
 # nv1 is the number of observations in the calibraiton period. 
 
 #--- Critical threshold absolute correlation
-nkeep<-floor(f*mv1) # want no more than this number of potential preds in pool
+nkeep<-floor(f*mv1) # want no more than this number of potential predictors in pool
 
 # Cannot keep more cols of W1 than W1 has
 nkeep <-min(nkeep,ncol(W1))
@@ -448,7 +449,7 @@ rc = rs$x[nkeep] # threshold absolute correlation for keeping
 # Pull subset of predictors with absolute correlation >rc
 j<-rs$ix;
 nW2 <- nkeep # number of screened potential predictors
-ix1<-j[1:nkeep] # columnn indices of screened ...
+ix1<-j[1:nkeep] # column indices of screened ...
 W2<-W1[,ix1] # correlation-screened set of predictors; note these are ordered
 # left to right in W2 in order of decreasing absolute correlation with v1
 W2<-as.matrix(W2)
@@ -831,7 +832,7 @@ hLillie <- lillie.test(M$residuals); # Lilliefors test for normality
 
 The next chunk checks the temporal stability of the model estimated on the full calibration period by split-sample calibration/validation [@Snee1977]. The full calibration period is split in half (earlier half longer if total length odd). The model is then re-calibrated on each half of the full period and validated on the other half. Validation skill is measured with "skill" statistics.
 
-The split-sample exercise applies linear regression, but in ReconStep there is no automatic selection of predictors in calibrating the split-sample models. Those predictors are the same variables selected selected as predictors for the full-period reconstruction model.
+The split-sample exercise applies linear regression, but in ReconStep there is no automatic selection of predictors in calibrating the split-sample models. Those predictors are the same variables selected as predictors for the full-period reconstruction model.
 
 Consider the first half as period A and the second half as period B.The model is first fit to A and validated on B. The model is then fit to B and validated on A. Validation consists of computing the RE statistic on residuals for the validation period. An RE\>0 indicates the model performs better, or has a lower sum of squares of errors, than a null model in which the prediction for each year is the calibration-period observed mean of *y*. In that sense, RE\>0 indicates "some" skill.
 
