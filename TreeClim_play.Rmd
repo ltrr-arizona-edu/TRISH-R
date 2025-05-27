@@ -1,0 +1,121 @@
+---
+title: "TreeClim Explore"
+output: html_notebook
+---
+
+[May 19, 2021] This is a premliminary exploration of the **TreeClim** package. I will focus on the functions. To explore the functions, I will use the examples provided in the manual. 
+
+Functions (in order presented in manual):
+
+1) dcc - response and correlation function analysis
+2) dlm - dendro-flavored linear model
+3) g_test - Gershunov test for spurious low-frequency modulations
+4) seascorr - seasonal (partial) correlation analysis
+5) skills - evaluate reconstruction skills using split-calibration
+6) traceplot - trace the temporal development of response or correlation functions
+
+Data:
+
+
+
+Boosters:
+
+Prepare workspace and load libraries. 
+```{r}
+rm(list=ls())
+library(treeclim)
+```
+
+### What is "dcc"?
+This function does response and correlation functions. Multiple climate variables can be  input together but it looks like each variable is run individually against the tree-ring chronology. 
+
+```{r}
+# to run dcc as a correlation function
+dc_corr <- dcc(muc_spruce,muc_clim, method="correlation")
+
+# to run dcc as a response function
+dc_resp <- dcc(muc_spruce,muc_clim, method="response")
+
+# fyi: to load the data sets
+data("muc_spruce")
+data("muc_clim")
+```
+
+### What is "dlm"?
+This is "dendro-style" SIMPLE (see dlm1 below) or MULTIPLE (see dlm2 below) linear regression, where the predictand is a tree-ring variable and the predictor(s) is/are climate variable(s). 
+
+NOTE: For multiple predictor variables, it does not look like they enter the model in a stepwise fashion.  
+
+Additional notes: 
+
+**Arguments**
+
+*.sum(6:8)* is modified climate variable. in the call below, this modifier acts on the climate data matrix, "rt_prec". 
+```{r,message = FALSE}
+# Linear model with single predictor
+dlm1 <- dlm(rt_spruce,rt_prec,.sum(6:8),param_names = "summer_prec")
+dlm1_summ <- summary(dlm1)
+
+# to plot diagnostics
+plot(dlm1)
+
+# Linear model with multiple predictors: summer prec and summer temp
+dlm2 <- dlm(rt_spruce,list(rt_prec,rt_temp),
+            .sum(6:8,"prec")+.mean(6:8,"temp"),
+            var_names=c("prec","temp"),
+            param_names=c("summer_prec","summer_temp"))
+
+dlm2_summ <- summary(dlm2)
+mdl_compare <- anova(dlm1,dlm2)
+
+# to plot diagnostics
+plot(dlm2)
+```
+
+### What is g-test?
+I'm not going to dive too deeply into this at the moment. If desireed, save for future exploration.
+
+```{r eval=FALSE}
+dc_cor <- dcc(muc_spruce,muc_clim,3:9,method = "cor",moving = TRUE)
+g_test(dc_cor,sb=FALSE)
+```
+### What is seascorr?
+
+(We know the answer to this!)
+```{r}
+sc <- seascorr(muc_fake,muc_clim)
+sc
+plot(sc)
+```
+
+### What is skills?
+
+This function evaluates reconstruction skills using split calibration. According to the manual, it can be applied to the following functions: dcc, dlm, or seascorr. 
+```{r}
+# example from manual
+dc <- dcc(muc_fake,muc_clim,.mean(6:9,"temp") + .sum(6:9,"prec"))
+sk1 <- skills(dc)
+sk1
+plot(sk1)
+```
+
+```{r}
+# from our simple linear regression model that we ran earlier
+sk2 <- skills(dlm1)
+sk2
+plot(sk2)
+
+# skills cannot be run for models with >1 predictor variable
+```
+### What is traceplot? 
+A trace of the temporal development of response or correlation coefficients. 
+```{r eval = FALSE}
+# note: default method for dcc is "response"
+dc_resp <- dcc(muc_spruce,muc_clim,4:9,method = "correlation",dynamic = "evolving")
+```
+
+```{r eval = TRUE}
+traceplot(dc_resp,c("prec.curr.may","prec.curr.jun","prec.curr.jul"))
+```
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
