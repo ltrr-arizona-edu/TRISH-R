@@ -1,39 +1,49 @@
 # Prepare climate and tree-ring data for call to treeclim/seascorr
 # 
 # D Meko
-# Last revised 20250526
+# Last revised 20250527
 #
-# Written because needed to convert format of monthly P and T data from what
-# came from KNMI explorer to what treeclim's seascorr function wants
+# Written because I needed to convert format of monthly P and T downloaded from 
+# KNMI Explorer to format readable as input to package treeclim's seascorr
+# function.
 #
-# This script prepares climate and tree-ring data for call to
-#   treeClim_seascorr.Rmd.  Seascorr accepts the monthly climate data
-#   as a data frame with years
-#   as the row names. Two time series of monthly climate data are required, a
-#   primary and secondary. Seascorr can accept that data as a 4-col matrix or 
-#   frame, with cols: year, month, primary climate variable, secondary ...
+# This script prepares climate and tree-ring data for call to 
+# treeClim_seastcorr.Rmd. Monthly monthly climate data must be a data frame
+# with years as the row names. Two time series of monthly climate data are required: a
+# primary and secondary. Seascorr reads that data as a 4-col matrix or with 
+# cols: year, month, primary climate variable, secondary variable.
+#
 # This script assumes you have in your working folder:
 #   1) A tab-sep or space-sep file of each of the climate variables, with year
-#     as col 1 and jan-Dec data as cols 2-13
+#     as col 1 and Jan-Dec data as cols 2-13
 #   2) A tab-sep or space-sep file of tree-ring chronologies with year as col-1
-#     and one or more chrons as the remaining columns. You edit the script to say
-#     which of the chronologies to use
+#     and one or more chronilogies as the remaining columns. You edit the script 
+#     to tell which of the chronologies to use
 #
 # The script finally saves the two data frames for later loading by the script 
-# that calls seascorr. Last statement saves the data as 'SeascorrTahoeInput.RData'. You 
-# would revise output filename as well as the input filenames, as needed, to be consistent
-# with your data.
+# TreeClim_seascorr.Rmd. Last statement saves the data as 'SeascorrTahoeInput.RData'. 
+# You should edit to match your desired filename for ".RData" file, and should also
+# revise the input filenames to be consistent with your data. 
 #
-# Search for "TailorMe" to find those lines that need to be tailored to your data
+# To assist in making those edits, I have added a comment containing the text "TailorMe"
+# before lines needing revision. Search for "TailorMe" to find those lines.
 
-source("c13toc3.R") # converts 13-col to 3 col matrix
+# Edit following two lines to match where you have stored user-written functions (UWFs)
+# and input files
+code_dir <- "/home/dave/GitWork/TRISH-R/" # path to UWFs, TailorMe
+data_dir <- "/home/dave/GitWork/TRISH-R/" # path to input data, TailorMe
 
-#--- Read input climate data files 
-V1 <- read.table('Pmonthly.dat',sep="",header=FALSE) # read 13-col space-sep file TailorMe
-V2 <- read.table('Tmonthly.dat',sep="",header=FALSE) # read 13-col space-sep file TailorMe
+source(paste(code_dir,'c13toc3.R',sep=''))  # converts 13-col to 3 col matrix
+
+
+
+#--- Read input climate data files as data.frame 
+# Edit next two lines as needed for path & filname
+V1 <- read.table(paste(data_dir,'Pmonthly_seascorr.dat',sep=''),sep="",header=FALSE) # read 13-col space-sep file TailorMe
+V2 <- read.table(paste(data_dir,'Tmonthly_seascorr.dat',sep=''),sep="",header=FALSE) # read 13-col space-sep file TailorMe
 
 # Read table of tree-ring chronologies; pull desired, store as data frame
-T1 <- read.table('ChronsStdTahoe5.txt',sep='\t',header=TRUE) # TailorMe
+T1 <- read.table(paste(data_dir,'ChronsTahoe5.txt',sep=''),sep='\t',header=TRUE) # TailorMe
 T2 <- T1[,-1] # strip off year col
 rownames(T2) <- T1[,1]
 rnms  <- rownames(T2)
@@ -90,4 +100,4 @@ colnames(X) <- c('Year','Month','P','T') # TailorMe
 # X [data frame] climate data: year, month, primary secondary
 # A [data frame] tree ring chronology: years as rownames
 
-save(X,A,file='SeascorrTahoeInput.RData') # TailorMe
+save(X,A,file=paste(data_dir,'SeascorrTahoeInput.RData',sep='')) # TailorMe
