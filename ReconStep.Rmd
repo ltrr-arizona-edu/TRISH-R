@@ -9,9 +9,9 @@ output:
 bibliography: /home/dave/GitWork/TRISH-R/ReconStep.bib
 ---
 
-ReconStep.Rmd is an instructional [R Markdown](http://rmarkdown.rstudio.com) notebook ("Rmd" file) to illustrate the reconstruction of a climatic or hydrologic time series from a network of tree-ring site chronologies by stepwise multiple linear regression. The latest version of ReconStep was revised for the course "Tree Rings, Climate, Natural Resources, and Human Interaction," to be held in August 2025 at the Petnica Science Research Center in Serbia.
+ReconStep.Rmd is an instructional [R Markdown](http://rmarkdown.rstudio.com) notebook ("Rmd" file) to illustrate the reconstruction of a climatic or hydrologic time series from a network of tree-ring site chronologies by stepwise multiple linear regression. The latest version of ReconStep was revised for the course "Tree Rings, Climate, Natural Resources, and Human Interaction," to be held in late summer, 2026, in Artvin, Turkiye.
 
-The code in ReconStep.Rmd is an R script modified from an earlier script, StepwiseRecon.Rmd, written for the dendroclimatology module of the summer 2022 Dendrochronology Intensive Summer Course (DISC) at the University of Arizona.
+The code in ReconStep.Rmd is an R script modified from an earlier script, StepwiseRecon.Rmd, used for the dendroclimatology module of the summer 2025 Dendrochronology Intensive Summer Course (DISC) at the University of Arizona.
 
 ReconStep.Rmd comprises "chunks" of code preceded by text explaining what the chunks do. "Rmd" stands for "R markdown." Rmd files can be run in RStudio using a dropdown menu ("Run" button) that lets you go chunk-by-chunk or run the entire Rmd at once. Results, which may be graphics, tables, or data listings, occur beneath the chunk that generated them.
 
@@ -20,7 +20,7 @@ After running this script, you can right-click on any graphic and save it as a p
 -   F: list with results of regression modeling and cross-validation
 -   yrgoc and yrspc: first and last year of calibration period
 -   resSS: list with results of split-sample stability check of regression model
--   resIV: list with results of independent verification on period help back from calibration/validation; relevant only if the specifications call for independent verification (see User settings).
+-   resIV: list with results of independent verification on a period help back from calibration/validation; relevant only if the specifications call for independent verification (see User settings).
 -   resPCA: list with results of PCA run on matrix of screened lagged chronologies
 -   YhCI.ts: matrix with reconstructed predictand, full length, with 50% confidence interval (CI)
 -   Z.ts: time series of observed and reconstructed predictand for the calibration period
@@ -29,9 +29,9 @@ After running this script, you can right-click on any graphic and save it as a p
 
 Preliminary steps are to install R and Rstudio along with any needed R packages. The six R packages required are listed in the "library" commands of the next code chunk. Compatibility problems sometimes come up when using old versions of R or RStudio. My versions for testing this program are:
 
--   R version 4.5.0 (2025-04-11)
+-   R version 4.6.0 (2026-04-24)
 
--   RStudio version 2024.12.1 Build 563
+-   RStudio version 2026.04.0 Build 526
 
 You also need access to eight user-written functions (UWFs), which for this script are defined as functions written by David Meko. The "source" commands in the chunk below indicate the UWFs needed. Notice that these source commands include a path to a folder on Meko's laptop. You need to edit the lines to replace that path with a path to where you are storing the UWFs on your laptop. The simplest solution is to keep everything -- this script, the UWFs, and all data files, in a single R project folder. In that case no path is needed in the "source" commands for the UWFs.
 
@@ -66,7 +66,7 @@ Stepwise regression relies on automated selection of predictors, and so has a ri
 
 Cross-validation, following @Meko1997a, leaves out *m* observations in developing cross-validation residuals. If specification call for no lags allowed on predictors, $m=1$, and cross-validation is "leave-1-out" [@Michaelsen1987] .Otherwise, *m* is set to $m=1+4L_{max}$, where $L_{max}$ is the highest positive or negative lag allowed on the chronologies. This results in more than one observation being omitted for each iteration of cross-valiation modeling. For example if two negative and two positive lags are allowed, $L_{max}=2$ and $m=9$ observations are omitted in each cross-validation iteration.
 
-In leave-*m*-out cross-validation *m* is always an odd number. A separate model to predict *y* for each year of the calibration period is fit to a subset of years from which *m* years of the full calibration period centered on the target year have been omitted. The procedure guarantees that for a regression model that includes lagged predictors the cross-validation prediction for any year, *t*=*j*, does not depend on any of the same tree-ring values used to calibration the cross-validation model [@Meko1997a].
+In leave-*m*-out cross-validation *m* is always an odd number. A separate model to predict *y* for each year of the calibration period is fit to a subset of years from which *m* years of the full calibration period centered on the target year have been omitted. The procedure guarantees that if the regression model has lagged predictors the cross-validation prediction for any year, *t*=*j*, does not depend on any of the same tree-ring values used to calibration the cross-validation model [@Meko1997a].
 
 Reconstruction steps are summarized below.
 
@@ -89,13 +89,13 @@ Reconstruction steps are summarized below.
 6)  Apply the model to full-length matrix of available tree-ring data to generate reconstructed *y*, or $\hat{y}$.
 
 
-The reconstruction process also includes analysis of residuals and split-sample calibration/validation of the final regression model. Optionally, "independent verification" of the model is also implemented. Independent verification is checking skill of prediction on observations (years) of data withheld from data screening or model calibration. More details are given in the text preceding each code chunk, as well as in the comments inside the chunks.
+The reconstruction process also includes analysis of residuals and split-sample calibration/validation of the final regression model. Optionally, "independent verification" of the model is also implemented. Independent verification is checking the skill of prediction on observations (years) of data withheld from data screening or model calibration. More details are given in the text preceding each code chunk, as well as in the comments inside the chunks.
 
 ### Libraries and functions
 
 The next chunk loads libraries and makes accessible, or "sources," any needed UWFs. You need to edit just one line in the next chunk: change the folder in the "code_dir" statement to match the folder where you have stored the UWFs on your laptop.
 
-Try executing the chunk below by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. You will get a couple warnings about objects being "masked" from a couple R packages; ignore the warnings.
+Try executing the chunk below by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. You will get a couple warnings about objects being "masked" from a couple R packages; ignore those warnings.
 
 ```{r}
 rm(list=ls())
@@ -103,7 +103,7 @@ rm(list=ls())
 # Edit following line to match where you have stored user-written functions (UWFs)
 code_dir <- "/home/dave/GitWork/TRISH-R/"
 
-# The following five packages are essential to ReonStep.Rmd
+# The following five packages are essential to ReconStep.Rmd
 library(rmarkdown)
 library(car) 
 library(pracma)
@@ -117,7 +117,10 @@ library(data.table)
 library(treeclim)
 
 # The next packages are not needed by ReconStep.Rmd, but are needed by
-# ReconAnalog.R
+# ReconAnalog.R. You may comment out the next 4 lines if you do not plan on using
+# ReconAnalog.R.
+# Edit following line (4 lines) if you have not loaded the 4 packages and are 
+# not planning to use ReconAnalog.R. "Editing" here simply means "commenting out."
 library(resample)
 library(rjson)
 library(ggplot2)
@@ -152,11 +155,11 @@ clean_bib <- function(input_file, input_bib, output_bib){
 }
 
 # Call function to generate bib file for this project from my bib file. User
-# can ignore this code. I mus be aware that clear_bib does not work properly with
+# can ignore this code. Be aware that clear_bib does not work properly with
 # bibtex files, like mine, that have key fields with more than one name, such
 # as "Meko&Stockton1983." So, I have to build ReconStep.bib MANUALLY pasting 
 # from /media/dave/Red128/BibliographyMeko.bib to ReconStep.bib. To avoid catastropic 
-# overwriting of ReconStep.bib, I name the NEVER TO BE CREATED output file below
+# overwriting of ReconStep.bib, I name the NEVER-TO-BE-CREATED output file below
 # 'ReconStepMeko.bib' instead of ReconStep.bib.
 #
 # clean_bib('ReconStep.Rmd','/home/dave/Data/BibTex/BibliographyMeko.bib','ReconStepMeko.bib')
@@ -339,7 +342,7 @@ The next chunk of code screens the matrix of lagged chronologies to include only
 
 The next chunk also creates a list of the ids of the screened tree-ring variables. These or their principal components will comprise the pool of potential predictor for the reconstruction model. A bar plot of the correlations is also displayed. The longest bars in the chart correspond to the predictors passing screening. The coded names of those predictors are listed in the console. The correlations are computed for the calibration period that you specified in "User settings," or otherwise for years that all series overlap the predictand (default calibration period).
 
-The "critical" absolute correlation as defined here is not necessarily statistically significant and indeed is not tested for statistical significance. The variables in the tree-ring matrix -- possibly including lagged variables --- are ranked according to absolute correlation with the predicand. The "nkeep" variables most highly correlated (absolute) with the predictand are retained as the pool of potential predictors. In that sense, the critical correlation is s the absolute correlation that if used as a threshold would result in "nkeep" tree-ring variables in the pool of potential predictors. By lowering input parameter *f* you effectively require a stronger correlation for the variable to be in the pool of potential predictors. 
+The "critical" absolute correlation as defined here is not necessarily statistically significant and indeed is not tested for statistical significance. The variables in the tree-ring matrix -- possibly including lagged variables --- are ranked according to absolute correlation with the predicand. The "nkeep" variables most highly correlated (absolute) with the predictand are retained as the pool of potential predictors. So, here the "critical" correlation is defined as the threshold absolute correlation that yields "nkeep" tree-ring variables in the pool of potential predictors. By lowering input parameter *f* you effectively require a stronger correlation for the variable to be included in the pool of potential predictors. 
 
 ```{r}
 
@@ -436,8 +439,8 @@ if (LIV){
 # predictor. Names of columns of W1, colnames(W1), are coded to indicate lag
 
 #--- Correlate v1 with cols of W1 and identify threshold correlation,'
-# rc, marking the floor(f*nv1) highest correlation, where f is a decimal fraction and
-# nv1 is the number of observations in the calibraiton period. 
+# rc, marking the floor(f*mv1) highest correlation, where f is a decimal fraction and
+# mv1 is the number of observations in the calibraiton period. 
 
 #--- Critical threshold absolute correlation
 nkeep<-floor(f*mv1) # want no more than this number of potential predictors in pool
@@ -837,9 +840,9 @@ The next chunk checks the temporal stability of the model estimated on the full 
 
 The split-sample exercise applies linear regression, but in ReconStep there is no automatic selection of predictors in calibrating the split-sample models. Those predictors are the same variables selected as predictors for the full-period reconstruction model.
 
-Consider the first half as period A and the second half as period B.The model is first fit to A and validated on B. The model is then fit to B and validated on A. Validation consists of computing the RE statistic on residuals for the validation period. An RE\>0 indicates the model performs better, or has a lower sum of squares of errors, than a null model in which the prediction for each year is the calibration-period observed mean of *y*. In that sense, RE\>0 indicates "some" skill.
+Consider the first half as period A and the second half as period B. The model is first fit to A and validated on B. The model is then fit to B and validated on A. Validation consists of computing the RE statistic on residuals for the validation period. An RE\>0 indicates the model performs better, or has a lower sum of squares of errors, than a null model in which the prediction for each year is the calibration-period observed mean of *y*. In that sense, RE\>0 indicates "some" skill.
 
-Split-sample calibration/validation as described here is not strictly independent validation, because the full period of overlap of *y* with tree-ring data has been used pick the predictor variables for the reconstruction model.
+Split-sample calibration/validation as described here is not strictly "independent" validation, because the full period of overlap of *y* with tree-ring data has been used to pick the predictor variables for the reconstruction model.
 
 A figure with time series plots of observed *y* and split-sample predictions of *y* is produced in the console. A horizontal line, called the "null prediction is plotted to mark the no-skill prediction for each validation period. The reduction of error (RE; @Fritts&Guiot1990) statistic for validation on the early and late halves is annotated on the figure. If the reconstruction for some observation is closer than the null prediction to the observed *y*, that observation contributes positively to RE; otherwise, the contribution is negative. Large departures have an amplified effect on RE because RE is computed from the sum-of-squares of differences of observed and predicted. RE\>0 is interpreted as a model with"some" skill.
 
@@ -967,7 +970,7 @@ plot(yryh,yh,type="l",col="blue",xlim=xlims,ylim=ylims,
 abline(h=mean(yh),lty=2,col='#808080') # dash gray
 polygon(xP,yP, col=rgb(1.00,0,0,0.1),border=NA) # mustard
 
-# # OLD CODE, COMMENTNED OUT
+# # OLD CODE, COMMENTED OUT
 # YhCI<-cbind(yh,yhlo,yhhi)
 # namestemp<-c('Recon','Lower 50%','Upper 50%')
 # YhCI.ts<- ts(YhCI,start=yryh[1],frequency=1,names=namestemp)

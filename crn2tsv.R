@@ -75,6 +75,8 @@ crn2tsv <- function(Din){
   LcolNumbers <- Din$LcolNumbers
   maskChron <- Din$maskChron
   
+
+  
   # Missing value code for output tsv files 
   if (LNaN){
     mvCode <- "NaN"
